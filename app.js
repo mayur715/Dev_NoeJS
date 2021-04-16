@@ -40,6 +40,12 @@ app.use(
   })
 );
 
+app.use(function(req, res, next) {
+  if (!req.user)
+      res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  next();
+});
+
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
