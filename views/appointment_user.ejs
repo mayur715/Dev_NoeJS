@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <link rel="stylesheet" href="/stylesheets/bootstrap-datepicker3.min.css" type="text/css">
+        <script type="text/javascript" src="/js/bootstrap-datepicker.min.js"></script>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+        <style>
+
+                .profile{
+                display:inline-block;
+                border:2px solid ;
+                border-radius:100%;   
+                width:100px;
+                height:100px;
+                background-position:center;
+                background-size:cover;
+                }
+
+        </style>
+        <script>
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = (e) =>  {
+                        // $('#'+id).show();
+                        $('#profileid')
+                            .attr('src', e.target.result)
+                            .width(150)
+                            .height(150);
+                    };
+                    reader.readAsDataURL(input.files[0]); // convert to base64 string
+                }
+
+            }
+
+            function openfile(){
+  
+                    $('#fileChoose').trigger('click');
+            }
+
+        </script>
+        
+
+    </head>
+    <body>
+       
+        <div id="main-content">
+            <div class="container-fluid">
+                <div class="block-header">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-8 col-sm-12">
+                            <!-- <h2><a href="javascript:void(0);" class="btn btn-xs btn-link btn-toggle-fullwidth"><i class="fa fa-arrow-left"></i></a> Book Appointment</h2> -->
+                            <h2>Book Appointment</h2>
+                            <!-- <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html"><i class="icon-home"></i></a></li>
+                                <li class="breadcrumb-item active">Appointment</li>
+                            </ul> -->
+                        </div>            
+                        <!-- <div class="col-lg-6 col-md-4 col-sm-12 text-right">
+                            <div class="bh_chart hidden-xs">
+                                <div class="float-left m-r-15">
+                                    <small>Visitors</small>
+                                    <h6 class="mb-0 mt-1"><i class="icon-user"></i> 1,784</h6>
+                                </div>
+                                <span class="bh_visitors float-right">2,5,1,8,3,6,7,5</span>
+                            </div>
+                            <div class="bh_chart hidden-sm">
+                                <div class="float-left m-r-15">
+                                    <small>Visits</small>
+                                    <h6 class="mb-0 mt-1"><i class="icon-globe"></i> 325</h6>
+                                </div>
+                                <span class="bh_visits float-right">10,8,9,3,5,8,5</span>
+                            </div>
+                            <div class="bh_chart hidden-sm">
+                                <div class="float-left m-r-15">
+                                    <small>Chats</small>
+                                    <h6 class="mb-0 mt-1"><i class="icon-bubbles"></i> 13</h6>
+                                </div>
+                                <span class="bh_chats float-right">1,8,5,6,2,4,3,2</span>
+                            </div>                        
+                        </div> -->
+                    </div>
+                </div>
+                <% include ./partials/messages %>
+                <form action="/appointment_user" method="POST" autocomplete="off" role="form" enctype="multipart/form-data">
+                <div class="row clearfix">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="card">
+                            <div class="header">
+                                <h2>Book Appointment</h2>
+                            </div>
+
+                            <div class="col-md-9">
+                                <div class="file-loading">
+                                    <div class="container">
+                                        <div class="row">
+                                         <%if (records.length >0){ %>
+                                          <% records.forEach(function(row){ %>
+                                            <img src="./uploads/<%= row.name %>" class="profile" id="profileid" alt="image">
+                                          <% }) } else { %>
+                                            <img src="./uploads/user1.png" class="profile" id="profileid" onclick=openfile(); alt="image"><br><br>
+                                            <input type="file" onchange=readURL(this); name="photo" id="fileChoose" style="display: none;" />
+                                            <%  }  %>
+                                            
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="body">
+                                <div class="row clearfix">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First Name">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <input type="text" name="last_name" class="form-control" placeholder="Last Name">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row clearfix">
+                                   
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <select class="form-control show-tick" name="gender">
+                                                <option value="">- Gender -</option>
+                                                <option >Male</option>   
+                                                <option >Female</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <input type="text" name="age" class="form-control" placeholder="Age">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <input type="text" name="email_address" class="form-control" placeholder="Enter Your Email">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <input type="text" name="mobile_no" class="form-control" placeholder="Phone">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row clearfix">                                
+                                    
+                                    <div class="col-sm-4">
+                                        <div class="form-group mb-3">                                        
+                                            <input data-provide="datepicker" name="appointment_date_time" data-date-autoclose="true" class="form-control" placeholder="Appointment Date">
+                                        </div>
+                                    </div>
+                                  
+                                    <div class="col-sm-12">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="submit" class="btn btn-outline-secondary">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+
+    </body>
+</html>
+

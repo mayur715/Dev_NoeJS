@@ -4,10 +4,13 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const flash = require('connect-flash');
 const session = require('express-session');
+var path = require('path');
 
 const app = express();
 
 app.use(express.static(__dirname + '/public'))
+//app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
 // Passport Config
 require('./config/passport')(passport);

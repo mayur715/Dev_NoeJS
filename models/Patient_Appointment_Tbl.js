@@ -6,7 +6,7 @@ const Patient_Appointment_TblSchema = new mongoose.Schema({
     required: true
   },
   patient_id: {
-    type: Number,
+    type: String,
     required: true
   },
   appointment_date_time: {
@@ -14,8 +14,8 @@ const Patient_Appointment_TblSchema = new mongoose.Schema({
     require:true
   },
   insert_date_time: {
-    type: String,
-    require:true
+    type: Date,
+    default: Date.now
   }
 });
 
