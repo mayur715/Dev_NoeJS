@@ -61,7 +61,7 @@ router.post('/appointment_user',upload,(req, res) => {
 
   if(!first_name || !last_name || !mobile_no )
     {
-      errors.push({ msg: 'Please enter all fields' });
+      errors.push({ msg: 'Please enter all (*) Mandatory Fields' });
     } 
 
     //   -------------  mobile sms-----------------
@@ -76,10 +76,7 @@ router.post('/appointment_user',upload,(req, res) => {
 
   if (errors.length > 0) {
     res.render('appointment_user', {
-      errors,
-      first_name,
-      last_name,
-      mobile_no
+      errors
     });
   } else {
 //   -------------  mobile sms-----------------
