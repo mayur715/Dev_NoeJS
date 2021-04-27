@@ -58,23 +58,17 @@ router.post('/appointment_user',upload,(req, res) => {
          
      var username = req.user.name;
      var userid = req.user.user_id;
-     
-    console.log(upload);
 
-    var img = fs.readFileSync(req.file.path);
- console.log("IMG-->",img);
-
-
-     const filepath = req.file;
-     var data = [];
+      var data = [];
       var imageFile="";
-     if (!filepath) {
+
+    if(typeof req.file !== "undefined")
+    {
       imageFile=req.file.filename;
       //  console.log("imageFile-->",imageFile);
        var success =req.file.filename+ " uploaded successfully";
        data.push({'name':imageFile});
-     }
-
+    }
          
 
 
@@ -141,7 +135,7 @@ router.post('/appointment_user',upload,(req, res) => {
     const newpatient_User = new Patient_Tbl({
       first_name,
       last_name, gender,age,mobile_no,
-      email_address,photo
+      email_address
     });  
     
     
@@ -155,7 +149,7 @@ router.post('/appointment_user',upload,(req, res) => {
 
 
         newAppointment_User.appointment_date_time = moment.utc(appointment_date_time).local().format('YYYY-MM-DDTHH:mm:SS.sss');
-        console.log("Current-->",newAppointment_User.appointment_date_time);
+        // --(insert appointment Date) console.log("Current-->",newAppointment_User.appointment_date_time);
 
         //console.log("A--->",moment(newAppointment_User.appointment_date_time).format('DD MMM YYYY, hh:mm a'));
         //console.log("A_Slash-->",moment(newAppointment_User.appointment_date_time).format('DD/MM/YYYY, hh:mm a'));
@@ -163,7 +157,9 @@ router.post('/appointment_user',upload,(req, res) => {
 
         var duration = moment.duration({hours: 5, minutes: 30});
         var sub = moment(newAppointment_User.appointment_date_time, 'DD/MM/YYYY, hh:mm a').subtract(duration).format();
-        console.log("Subtract-->",sub);
+        //console.log("Subtract-->",sub);
+
+        
         //console.log("A_Slash_sub-->",moment(sub).format('DD/MM/YYYY, hh:mm a'));
 
         //newAppointment_User.appointment_date_time = sub;
@@ -198,46 +194,69 @@ router.post('/appointment_user',upload,(req, res) => {
 // console.log("DATESTRING-->",dateString.replace(',', '').replace('PM', 'p.m.').replace('AM', 'a.m.'));
 
 
+Patient_Tbl.findOne({mobile_no:mobile_no}).then(patienttbl => {
+  if(patienttbl){
+    Counter.findOne({ counter_id: "appointment_id" }).then(counter_appointment => {
+      if (counter_appointment) {
+        Counter.updateOne({counter_id: "appointment_id"}, {
+          sequence_value : parseInt(counter_appointment.sequence_value) + 1
+              }, function(err, numberAffected, rawResponse) {
+
+                newAppointment_User.appointment_id = counter_appointment.sequence_value;
+                newAppointment_User.patient_id = patienttbl.patient_id;
+                newAppointment_User.save().then(appointment_user => {
+                  
+                  req.flash(
+                    'success_msg',
+                    'Appointment Details Added Successfully'
+                  );
+                   res.redirect('/appointment_user');
+                }).catch(err => console.log(err));
+
+                })
+            }
+    });
 
 
-              Counter.findOne({ counter_id: "patient_id" }).then(counter => {
-            if (counter) {              
-              Counter.updateOne({counter_id: "patient_id"}, {
-                  sequence_value : parseInt(counter.sequence_value) + 1
-                    }, function(err, numberAffected, rawResponse) {
+  }else
+  {
+    Counter.findOne({ counter_id: "patient_id" }).then(counter => {
+      if (counter) {              
+        Counter.updateOne({counter_id: "patient_id"}, {
+            sequence_value : parseInt(counter.sequence_value) + 1
+              }, function(err, numberAffected, rawResponse) {
 
-                      newpatient_User.patient_id = counter.sequence_value;
-                      newpatient_User.photo = imageFile;
-                      newpatient_User.save().then(patient_user => {
+                newpatient_User.patient_id = counter.sequence_value;
+                newpatient_User.photo = imageFile;
+                newpatient_User.save().then(patient_user => {
 
-                        Counter.findOne({ counter_id: "appointment_id" }).then(counter_appointment => {
-                          if (counter_appointment) {
-                            Counter.updateOne({counter_id: "appointment_id"}, {
-                              sequence_value : parseInt(counter_appointment.sequence_value) + 1
-                                  }, function(err, numberAffected, rawResponse) {
-              
-                                    newAppointment_User.appointment_id = counter_appointment.sequence_value;
-                                    newAppointment_User.patient_id = newpatient_User.patient_id;
-                                    newAppointment_User.save().then(appointment_user => {
-                                      
-                                      req.flash(
-                                        'success_msg',
-                                        'Appointment Details Added Successfully'
-                                      );
-                                       res.redirect('/appointment_user');
-                                    }).catch(err => console.log(err));
-              
-                                    })
-                                }
-                        });
-                      }).catch(err => console.log(err));
-
+                  Counter.findOne({ counter_id: "appointment_id" }).then(counter_appointment => {
+                    if (counter_appointment) {
+                      Counter.updateOne({counter_id: "appointment_id"}, {
+                        sequence_value : parseInt(counter_appointment.sequence_value) + 1
+                            }, function(err, numberAffected, rawResponse) {
+        
+                                newAppointment_User.appointment_id = counter_appointment.sequence_value;
+                                newAppointment_User.patient_id = newpatient_User.patient_id;
+                                newAppointment_User.save().then(appointment_user => {
+                                
+                                  req.flash(
+                                    'success_msg',
+                                    'Appointment Details Added Successfully'
+                                  );
+                                  res.redirect('/appointment_user');
+                                }).catch(err => console.log(err));
+        
+                                })
+                             }
+                          });
+                        }).catch(err => console.log(err));
                       })
-                  }
-          });
-    
-          
-   
+                    }
+                });
+      }
+});
+
   }
 });
 
