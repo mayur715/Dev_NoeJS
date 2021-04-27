@@ -1,6 +1,8 @@
 const express = require('express');
 var multer = require('multer');
 var path = require('path');
+var moment = require('moment');
+var moment_timezone = require('moment-timezone');
 const router = express.Router();
 const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
 var app = express();
@@ -35,31 +37,50 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
 // Appointment
 router.get('/appointment_user', ensureAuthenticated, (req, res) => {
   var data=[]
-  res.render('appointment_user',{ title: 'Upload File', records:data, success:'' })
+
+
+  //var dateoptions = new Date();
+  //var a = moment.utc(dateoptions).local().format('YYYY-MM-DDTHH:mm:SS.sss');
+  
+  //console.log("A_Slash_12Hr-->",moment(a).format('DD/MM/YYYY, hh:mm a'));
+  //console.log("A_Slash_24Hr-->",moment(a).format('DD/MM/YYYY, hh:mm'));
+  //var b = moment(a).format('DD/MM/YYYY, hh:mm a');
+
+
+
+  res.render('appointment_user',{ title: 'Upload File', records:data, success:''})
 });
 
 router.post('/appointment_user',upload,(req, res) => {
-  console.log("Starts Hello World");
+
   const { first_name, last_name, mobile_no , gender,age,
-          email_address,photo,appointment_date_time} = req.body;
+          email_address,appointment_date_time} = req.body;
+         
+     var username = req.user.name;
+     var userid = req.user.user_id;
+     
+    console.log(upload);
 
-        var username = req.user.name;
-      console.log("USER-->",username);
+    var img = fs.readFileSync(req.file.path);
+ console.log("IMG-->",img);
 
-      var userid = req.user.user_id;
-      console.log("USER-ID-->",userid);
 
-          var imageFile=req.file.filename;
-        //  console.log("imageFile-->",imageFile);
-         var success =req.file.filename+ " uploaded successfully";
-         var data = [];
+     const filepath = req.file;
+     var data = [];
+      var imageFile="";
+     if (!filepath) {
+      imageFile=req.file.filename;
+      //  console.log("imageFile-->",imageFile);
+       var success =req.file.filename+ " uploaded successfully";
+       data.push({'name':imageFile});
+     }
 
-         data.push({'name':imageFile});
+         
 
 
   let errors = [];
 
-  if(!first_name || !last_name || !mobile_no )
+  if(!first_name || !last_name || !mobile_no || !appointment_date_time)
     {
       errors.push({ msg: 'Please enter all (*) Mandatory Fields' });
     } 
@@ -73,11 +94,11 @@ router.post('/appointment_user',upload,(req, res) => {
     // const client = require('twilio')(apisid,authtoken);
     // let smsResponse;
   
+    
 
   if (errors.length > 0) {
     res.render('appointment_user', {
-      errors
-    });
+      errors,title: 'Upload File', records:data, success:''});
   } else {
 //   -------------  mobile sms-----------------
   //  asyncCall();
@@ -127,29 +148,76 @@ router.post('/appointment_user',upload,(req, res) => {
     const newAppointment_User = new Patient_Appointment({
       appointment_date_time
     });
+    
 
-              Counter.findOne({ counter_id: "user" }).then(counter => {
-            if (counter) {
-              Counter.updateOne({counter_id: "user"}, {
+        // toISOString.replace(/T/, ' ').replace(/\..+/, '')
+
+
+
+        newAppointment_User.appointment_date_time = moment.utc(appointment_date_time).local().format('YYYY-MM-DDTHH:mm:SS.sss');
+        console.log("Current-->",newAppointment_User.appointment_date_time);
+
+        //console.log("A--->",moment(newAppointment_User.appointment_date_time).format('DD MMM YYYY, hh:mm a'));
+        //console.log("A_Slash-->",moment(newAppointment_User.appointment_date_time).format('DD/MM/YYYY, hh:mm a'));
+
+
+        var duration = moment.duration({hours: 5, minutes: 30});
+        var sub = moment(newAppointment_User.appointment_date_time, 'DD/MM/YYYY, hh:mm a').subtract(duration).format();
+        console.log("Subtract-->",sub);
+        //console.log("A_Slash_sub-->",moment(sub).format('DD/MM/YYYY, hh:mm a'));
+
+        //newAppointment_User.appointment_date_time = sub;
+
+        //const formated_Date = '2017-07-30T15:01:13Z';
+        // const date = new Date(newAppointment_User.appointment_date_time) // formated_Date - SDK returned date
+        // console.log("DATE-->",date);
+        // console.log(`${date.getDate()}, ${date.getMonth() +1 }, ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
+
+
+
+        
+        //console.log("Converted timezone", moment_timezone.tz(newAppointment_User.appointment_date_time, 'Asia/Kolkata').format('DD/MM/YYYY, hh:mm a'))
+
+//         var dateoptions = new Date('2017-02-17T22:32:25.000Z');
+//         //var date = new Date('2017-02-17T22:32:25.000Z');
+//         const formatOptions = { 
+//             day:    '2-digit', 
+//             month:  '2-digit', 
+//             year:   'numeric',
+//             hour:   '2-digit', 
+//             minute: '2-digit',
+//             hour12: true 
+//       };
+// const dateString = dateoptions.toLocaleDateString('en-US', formatOptions);
+// // => "02/17/2017, 11:32 PM"
+// console.log("DATESTRING-->",dateString);
+// console.log("DATESTRING2-->",dateString.replace(',', '').replace('PM', 'p.m.').replace('AM', 'a.m.'));
+// dateString.replace(',', '').replace('PM', 'p.m.').replace('AM', 'a.m.');
+// // => "02/17/2017 11:32 p.m."
+
+// console.log("DATESTRING-->",dateString.replace(',', '').replace('PM', 'p.m.').replace('AM', 'a.m.'));
+
+
+
+
+              Counter.findOne({ counter_id: "patient_id" }).then(counter => {
+            if (counter) {              
+              Counter.updateOne({counter_id: "patient_id"}, {
                   sequence_value : parseInt(counter.sequence_value) + 1
                     }, function(err, numberAffected, rawResponse) {
 
                       newpatient_User.patient_id = counter.sequence_value;
                       newpatient_User.photo = imageFile;
-                      console.log("Patient_ID--->",newpatient_User.patient_id);
                       newpatient_User.save().then(patient_user => {
 
-                        Counter.findOne({ counter_id: "user" }).then(counter_appointment => {
+                        Counter.findOne({ counter_id: "appointment_id" }).then(counter_appointment => {
                           if (counter_appointment) {
-                            Counter.updateOne({counter_id: "user"}, {
+                            Counter.updateOne({counter_id: "appointment_id"}, {
                               sequence_value : parseInt(counter_appointment.sequence_value) + 1
                                   }, function(err, numberAffected, rawResponse) {
               
-                                    newAppointment_User.appointment_id = counter.sequence_value;
-                                    console.log("Appoin_ID-->",newAppointment_User.appointment_id);
+                                    newAppointment_User.appointment_id = counter_appointment.sequence_value;
                                     newAppointment_User.patient_id = newpatient_User.patient_id;
-                                    console.log("Appoin_ID-->",newAppointment_User.patient_id);
-
                                     newAppointment_User.save().then(appointment_user => {
                                       
                                       req.flash(
@@ -162,18 +230,13 @@ router.post('/appointment_user',upload,(req, res) => {
                                     })
                                 }
                         });
-
-
-                        
                       }).catch(err => console.log(err));
 
                       })
                   }
           });
-
-
     
-
+          
    
   }
 });

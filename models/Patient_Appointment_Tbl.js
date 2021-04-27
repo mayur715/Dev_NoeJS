@@ -10,7 +10,7 @@ const Patient_Appointment_TblSchema = new mongoose.Schema({
     required: true
   },
   appointment_date_time: {
-    type: String,
+    type: Date,
     require:true
   },
   insert_date_time: {

@@ -3,8 +3,6 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-        <link rel="stylesheet" href="/stylesheets/bootstrap-datepicker3.min.css" type="text/css">
-        <script type="text/javascript" src="/js/bootstrap-datepicker.min.js"></script>
         <link rel='stylesheet' href='/stylesheets/style.css' />
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
@@ -22,6 +20,14 @@
 
         </style>
         <script>
+
+            function loadsubmit()
+            {
+                alert();
+                    document.userform.action="/appointment_user";
+	                document.userform.submit();
+            }
+
 
             function readURL(input) {
                 if (input.files && input.files[0]) {
@@ -53,6 +59,7 @@
             <div class="container-fluid">
                 <div class="block-header">
                     <div class="row">
+                      
                         <div class="col-lg-6 col-md-8 col-sm-12">
                             <!-- <h2><a href="javascript:void(0);" class="btn btn-xs btn-link btn-toggle-fullwidth"><i class="fa fa-arrow-left"></i></a> Book Appointment</h2> -->
                             <h2>Book Appointment</h2>
@@ -87,7 +94,8 @@
                     </div>
                 </div>
                 <% include ./partials/messages %>
-                <form action="/appointment_user" method="POST" autocomplete="off" role="form" enctype="multipart/form-data">
+                <!-- action="/appointment_user" -->
+                <form  method="POST" id="userform" name="userform" autocomplete="off" role="form" enctype="multipart/form-data">
 
                 	<div class="row">
                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pull-right">
@@ -180,7 +188,7 @@
                                         <div><label for="mobileno" class="form-label">Mobile Number</label> : <font color="red">*</font></div>
                                     </div>
                                     <div class="col-lg-3 col-sm-3">
-                                        <div><input type="text" class="form-control" name="mobile_no" id="mobile_no" placeholder="Enter Your Mobile Number"/></div>
+                                        <div><input type="text" class="form-control" name="mobile_no" id="mobile_no" maxlength="10" placeholder="Enter Your Mobile Number"/></div>
                                     </div>
                                 </div>
 
@@ -190,7 +198,9 @@
                                         <div><label for="appointmentdate" class="form-label">Appointment Date </label> : <font color="red">*</font></div>
                                     </div>
                                     <div class="col-lg-3 col-sm-3">
-                                        <input data-provide="datepicker" name="appointment_date_time" data-date-autoclose="true" class="form-control" placeholder="Appointment Date">
+                                        <!-- <input data-provide="datepicker" name="appointment_date_time" data-date-autoclose="true" class="form-control" placeholder="Appointment Date"> -->
+                                        <input type="datetime-local" class="form-control"  name="appointment_date_time" id="appointment_date_time" placeholder="Appointment Date"/>
+
                                     </div>
 
 
@@ -198,7 +208,7 @@
                                         <div><label for="appointmenttime" class="form-label">Appointment Time</label> : <font color="red">*</font></div>
                                     </div>
                                     <div class="col-lg-3 col-sm-3">
-                                        <div><input type="text" class="form-control" name="appointment_time" id="appointment_time" placeholder="Appointment Time"/></div>
+                                        <div><input type="datetime-local" class="form-control" name="appointment_time" id="appointment_time" placeholder="Appointment Time"/></div>
                                     </div>
                                 </div>
                                 <br>
@@ -209,8 +219,8 @@
                                     
                                   
                                     <div class="col-sm-12">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                        <button type="submit" class="btn btn-outline-secondary">Cancel</button>
+                                        <button type="submit" onclick="loadsubmit()" class="btn btn-primary">Submit</button>
+                                        <button type="submit"  class="btn btn-outline-secondary">Cancel</button>
                                     </div>
                                 </div>
                             </div>
